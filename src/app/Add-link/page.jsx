@@ -13,7 +13,7 @@ import { collection, addDoc, query, orderBy, limit, getDocs } from "firebase/fir
 
 
 
-function Page() {
+ function Page() {
   const [forms, setForms] = useState([{ platform: '', link: '' }]);
   const [showForm, setShowForm] = useState(false);
   const [savedData, setSavedData] = useState([]);
