@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Navbar from '@/app/components/Navbar';
-import Page from '@/app/Add-link';
-import ProfileDetails from '@/app/profile-Details';
+import Page from './Add-link/page';
+import ProfileDetails from './profile-Details/page';
 import { firestore } from '@/app/Create-account/auth'; // Adjust the path as needed
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 
@@ -51,7 +51,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+     
       <Page
         savedData={savedData}
         setSavedData={setSavedData}

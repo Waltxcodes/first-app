@@ -16,6 +16,11 @@ function ProfileDetails() {
   const [errors, setErrors] = useState({ firstName: '', lastName: '', email: '' });
   const fileInputRef = useRef(null);
 
+  const [firstName2, setFirstName2] = useState('');
+  const [lastName2, setLastName2] = useState('');
+  const [email2, setEmail2] = useState('');
+  const [profileImage2, setProfileImage2] = useState('');
+
   const [profileData, setProfileData] = useState(null);
   const [newProfileSaved, setNewProfileSaved] = useState(false);
 
@@ -38,11 +43,19 @@ function ProfileDetails() {
     }
   }, [newProfileSaved]);
 
+  useEffect(() => {
+    // Update state variables from localStorage
+    setFirstName2(localStorage.getItem('firstName') || '');
+    setLastName2(localStorage.getItem('lastName') || '');
+    setEmail2(localStorage.getItem('email') || '');
+    setProfileImage2(localStorage.getItem('profileImage') || '');
+  }, [newProfileSaved]);
+
   const handleSave = async (e) => {
     e.preventDefault();
     let valid = true;
     const newErrors = { firstName: '', lastName: '', email: '' };
-
+  
     if (!firstName) {
       valid = false;
       newErrors.firstName = "can't be empty";
@@ -58,15 +71,21 @@ function ProfileDetails() {
       valid = false;
       newErrors.email = 'Email is invalid';
     }
-
+  
     setErrors(newErrors);
-
+  
     if (valid && profileImage) {
       try {
         // Upload the image to Firebase Storage
         const imageRef = ref(storage, `images/${profileImage.name}`);
         await uploadBytes(imageRef, profileImage);
         const imageUrl = await getDownloadURL(imageRef);
+
+        // Store the data in localStorage
+        localStorage.setItem('firstName', firstName);
+        localStorage.setItem('lastName', lastName);
+        localStorage.setItem('email', email);
+        localStorage.setItem('profileImage', imageUrl);
 
         // Save the image URL and email to Firestore
         await addDoc(collection(firestore, "profiles"), {
@@ -84,24 +103,25 @@ function ProfileDetails() {
           email,
           profileImage: imageUrl,
         });
+
         console.log('Profile details saved');
       } catch (error) {
         console.error('Error saving profile details:', error);
       }
     }
   };
-
+  
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
     }
   };
-
+  
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
-
+  
   return (
     <>
       <Navbar />
@@ -111,23 +131,22 @@ function ProfileDetails() {
           <div className="hidden lg:flex bg-white p-6 rounded-lg shadow-md flex-grow basis-14 items-center justify-center relative">
             <div className="relative w-64 h-128">
               <Image src={Phone} alt="Phone Image" />
-              {newProfileSaved && profileData && (
+              {email2 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ top: '-20px' }}>
-                  {profileData.profileImage && (
+                  {profileImage2 && (
                     <img
-                      src={profileData.profileImage}
+                      src={profileImage2}
                       alt="Profile Image"
                       className="w-20 h-20 rounded-full object-cover mb-4"
                     />
                   )}
                   <div className="text-center">
-                    <p className="font-bold text-xl text-black bg-white">{profileData.firstName} {profileData.lastName}</p>
-                    <p className="text-black mb-64 bg-white">{profileData.email}</p>
+                    <p className="font-bold text-xl text-black bg-white">{firstName2} {lastName2}</p>
+                    <p className="text-black mb-64 bg-white">{email2}</p>
                   </div>
                   
                 </div>
               )}
-              
             </div>
           </div>
 
@@ -186,12 +205,11 @@ function ProfileDetails() {
                       onChange={(e) => setFirstName(e.target.value)}
                     />
                     {errors.firstName && (
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-red-500">
-                        {errors.firstName}
-                      </span>
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-red-500">{errors.firstName}</span>
                     )}
                   </div>
                 </div>
+
                 <div className="flex items-center justify-between mb-4 relative">
                   <label className={`block text-gray-700 mb-2 w-1/3 ${errors.lastName ? 'text-red-500' : ''}`}>
                     Last name*
@@ -199,18 +217,17 @@ function ProfileDetails() {
                   <div className="relative w-2/3">
                     <input
                       type="text"
-                      placeholder="e.g. Appleseed"
+                      placeholder="e.g. Doe"
                       className={`w-full p-2 pr-20 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:border-[#633bff] focus:shadow-[0_0_0_4px_rgba(99,59,255,0.15)]`}
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
                     {errors.lastName && (
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-red-500">
-                        {errors.lastName}
-                      </span>
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-red-500">{errors.lastName}</span>
                     )}
                   </div>
                 </div>
+
                 <div className="flex items-center justify-between mb-4 relative">
                   <label className={`block text-gray-700 mb-2 w-1/3 ${errors.email ? 'text-red-500' : ''}`}>
                     Email address*
@@ -218,28 +235,25 @@ function ProfileDetails() {
                   <div className="relative w-2/3">
                     <input
                       type="email"
-                      placeholder="e.g. johnappleseed@mail.com"
+                      placeholder="e.g. john@gmail.com"
                       className={`w-full p-2 pr-20 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:border-[#633bff] focus:shadow-[0_0_0_4px_rgba(99,59,255,0.15)]`}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     {errors.email && (
-                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-red-500">
-                        {errors.email}
-                      </span>
+                      <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-red-500">{errors.email}</span>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end">
-              <button
-                className="bg-[#633bff] text-white py-2 px-4 rounded-md"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-            </div>
+
+            <button
+              onClick={handleSave}
+              className="bg-[#633bff] text-white px-4 py-2 rounded-md hover:bg-[#5a32e3] focus:outline-none focus:ring-2 focus:ring-[#633bff] focus:ring-opacity-50"
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>

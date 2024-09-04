@@ -13,7 +13,7 @@ import { collection, addDoc, query, orderBy, limit, getDocs } from "firebase/fir
 
 
 
-function Page() {
+ function Page() {
   const [forms, setForms] = useState([{ platform: '', link: '' }]);
   const [showForm, setShowForm] = useState(false);
   const [savedData, setSavedData] = useState([]);
@@ -101,6 +101,7 @@ function Page() {
       <div className="px-4 mt-0 bg-[#fafafa]">
         <div className="flex flex-col lg:flex-row gap-8 mb-8">
           {/* First Container */}
+
           <div className="hidden lg:flex bg-white p-6 rounded-lg shadow-md flex-grow basis-14 items-center justify-center relative">
             <div className="relative w-64 h-128">
               <Image src={Phone} alt="Phone Image" />
@@ -168,7 +169,7 @@ function Page() {
                   <Image src={Started} alt="Another Image" width={300} height={200} className="mb-4" />
                 </div>
                 <h3 className="text-xl font-bold mb-2 text-center">Let's get you started</h3>
-                <p className="mb-4 text-center">Use the "Add new link" button to get started. Once you have more than one link, you can reorder and edit them. We're here to help you share your profiles with everyone!</p>
+                <p className="mb-4 text-center">Use the "Add new link" button to get started. Once you have more than one link, you cann reorder and edit them. We're here to help you share your profiles with everyone!</p>
               </div>
             )}
             <hr className="my-4 border-gray-300" />
